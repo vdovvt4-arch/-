@@ -17,7 +17,7 @@ import {
   EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, collection,
+  getFirestore, initializeFirestore, doc, getDoc, setDoc, updateDoc, collection,
   addDoc, getDocs, query, where, orderBy, deleteDoc,
   serverTimestamp, runTransaction, increment, writeBatch
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
@@ -45,7 +45,8 @@ const app = initializeApp(firebaseConfig);
 analyticsSupported().then((ok) => { if (ok) { try { getAnalytics(app); } catch (e) { /* noop */ } } }).catch(() => {});
 
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,});
 const storage = getStorage(app);
 
 function randomUsername() {
