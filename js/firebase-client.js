@@ -38,7 +38,6 @@ const firebaseConfig = {
   appId: "1:18765637155:web:8b040aada1a45abfdc7396",
   measurementId: "G-VFKV0FN12N"
 };
-
 const app = initializeApp(firebaseConfig);
 // Analytics only works over https/localhost — guard so file:// or
 // unsupported environments don't throw.
@@ -48,7 +47,6 @@ const auth = getAuth(app);
 const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,});
 const storage = getStorage(app);
-
 function randomUsername() {
   return "user_" + Math.random().toString(36).slice(2, 8);
 }
@@ -66,23 +64,27 @@ function randomUsername() {
 // ------------------------------------------------------------
 async function ensureUserDocs(user, extra = {}) {
   const profileRef = doc(db, "profiles", user.uid);
-  const existing = await getDoc(profileRef);
+  const existing = await withRetry(() => getDoc(profileRef));
   if (!existing.exists()) {
-    await setDoc(profileRef, {
-      full_name: extra.full_name || user.displayName || "طالب جديد",
+    await withRetry(() => setDoc(profileRef, {
+      full_name: extra.full_name  user.displayName  "طالب جديد",
       username: extra.username || randomUsername(),
-      email: user.email || extra.email || null,
+      email: user.email  extra.email  null,
       avatar_url: user.photoURL || null,
       academic_year: 2,
       role: "student",
       welcomed: false,
       created_at: serverTimestamp()
-    });
-    await setDoc(doc(db, "streaks", user.uid), {
+    }));
+    await withRetry(() => setDoc(doc(db, "streaks", user.uid), {
       current_streak: 0,
       longest_streak: 0,
       last_active_date: null
-    });
+    }));
+    await withRetry(() => setDoc(doc(db, "meta", "stats"), { studentCount: increment(1) }, { merge: true }));
+  }
+  return existing;
+}
     // Public counter — read by index.html before login, so keep it
     // in its own tiny doc instead of counting the profiles collection
     // (which non-signed-in visitors can't query).
@@ -471,3 +473,4 @@ const Api = {
 window.Auth = Auth;
 window.Api = Api;
 window.dispatchEvent(new Event("firebase-ready"));
+جاهز 
