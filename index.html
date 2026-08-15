@@ -1,4 +1,4 @@
-[15/08/2026 05:20 ص] عبدالله فاضل | Abdluh fudil .: <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -10,65 +10,210 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- ستايل إضافي لتحسين الحركات والتنقل -->
     <style>
-        html { transition: background-color 0.3s ease, color 0.3s ease; }
-        .auth-form {
-            display: none;
+        /* 1. المتغيرات والألوان */
+        :root {
+            --bg-body: #F4F7F9;
+            --bg-card: #FFFFFF;
+            --text-main: #14304A;
+            --text-muted: #6B7A8B;
+            --primary: #14304A;
+            --accent: #3FA796;
+            --input-bg: #F8FAFC;
+            --border-color: #E2E8F0;
+            --shadow: 0 12px 40px rgba(20, 48, 74, 0.08);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0F172A;
+            --bg-card: #1E293B;
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --primary: #5EEAD4;
+            --accent: #3FA796;
+            --input-bg: #0F172A;
+            --border-color: #334155;
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Tajawal', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* لمنع التمرير أثناء شاشة التحميل */
+        }
+
+        /* ------------------------------------------- */
+        /* 🌟 شاشة التحميل الافتتاحية (Splash Screen) */
+        /* ------------------------------------------- */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+        }
+        
+        .splash-logo {
+            width: 180px; /* حجم لوجو التحميل */
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            animation: pulseLogo 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes pulseLogo {
+            0% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 rgba(63, 167, 150, 0.4); }
+            50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 25px rgba(63, 167, 150, 0.2); }
+            100% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 rgba(63, 167, 150, 0); }
+        }
+
+        .splash-hidden {
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            visibility: hidden;
         }
-        .auth-form.active-form {
-            display: block;
+
+        /* ------------------------------------------- */
+        /* باقي تصميم الصفحة */
+        /* ------------------------------------------- */
+        .auth-wrap {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0; /* يبدأ مخفياً حتى تنتهي شاشة التحميل */
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .auth-wrap.visible {
             opacity: 1;
+            transform: translateY(0);
         }
-        .theme-toggle-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
+
+        .auth-hero {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .site-logo {
+            width: 120px;
+            height: auto;
+            margin: 0 auto 15px auto;
+            display: block;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .site-logo:hover { transform: scale(1.05); }
+        .
+ auth-title { font-size: 2rem; font-weight: 900; margin: 0 0 5px 0; color: var(--text-main); }
+        .auth-sub { font-size: 1rem; color: var(--text-muted); margin: 0; }
+
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: var(--input-bg);
+            border-radius: 16px;
+            padding: 5px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+        .auth-tab {
+            flex: 1;
+            background: transparent;
             border: none;
-            font-size: 1.5rem;
+            padding: 10px 0;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
         }
-        .theme-toggle-btn:hover {
-            transform: scale(1.1);
+        .auth-tab:hover { color: var(--text-main); }
+        .auth-tab.active {
+            background: var(--bg-card);
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
+
+        .form-group { margin-bottom: 18px; text-align: right; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+        .form-group input {
+            width: 100%; padding: 14px 16px; background: var(--input-bg); border: 2px solid var(--border-color);
+            border-radius: 12px; font-family: inherit; font-size: 0.95rem; color: var(--text-main); box-sizing: border-box; transition: all 0.3s ease;
+        }
+        .form-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(63, 167, 150, 0.15); background: var(--bg-card); }
+        .password-wrap { position: relative; }
+        .eye-btn { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); transition: color 0.3s; }
+        .eye-btn:hover { color: var(--accent); }
+
+        .btn-primary {
+            width: 100%; background: linear-gradient(135deg, var(--accent), #2b8274); color: white; border: none; padding: 14px; border-radius: 12px;
+            font-family: inherit; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 15px rgba(63, 167, 150, 0.3); margin-top: 10px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(63, 167, 150, 0.4); }
+        .btn-primary:active { transform: translateY(1px); }
+
+        .auth-form { display: none; }
+        .auth-form.active-form { display: block; animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        .theme-toggle-btn {
+            position: fixed; top: 20px; left: 20px; background: var(--bg-card); border: 1px solid var(--border-color); width: 45px; height: 45px;
+            border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: var(--shadow); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .theme-toggle-btn:hover { transform: rotate(15deg) scale(1.1); }
     </style>
 </head>
 <body>
 
-<!-- Theme Toggle -->
+<!-- شاشة التحميل الافتتاحية (Splash Screen) -->
+<div id="splashScreen" class="splash-screen">
+    <img src="images/logo.png" alt="تحميل..." class="splash-logo">
+</div>
+
+<!-- زر تبديل الوضع الليلي/النهاري -->
 <button class="theme-toggle-btn" id="themeToggle" aria-label="تبديل النمط" title="تغيير المظهر">🌙</button>
 
-<div class="auth-wrap">
+<div class="auth-wrap" id="mainContent">
   <div class="auth-hero">
-    <svg class="mark" viewBox="0 0 64 64" fill="none" width="80" height="80">
-      <circle cx="32" cy="32" r="32" fill="var(--primary, #14304A)"/>
-      <path d="M18 50 V24 A14 14 0 0 1 46 24 V50 Z" fill="var(--bg-main, #FFFFFF)"/>
-      <rect x="6" y="20" width="9" height="32" rx="1.5" fill="var(--accent, #3FA796)" transform="rotate(-28 15 52)"/>
-      <rect x="49" y="20" width="9" height="32" rx="1.5" fill="var(--accent, #3FA796)" transform="rotate(28 49 52)"/>
-    </svg>
+    <img src="images/logo.png" alt="لوجو منصة طبية" class="site-logo">
     <h1 class="auth-title">منصة طبيّة 🩺</h1>
-    <p class="auth-sub">بوابتك للتعلم الطبي الشامل والمتكامل</p>
-    
-    <div class="live-counter">
-      <div class="pulse-dot"></div>
-      <span id="liveCounterText">يتم تجهيز بيئة التعلم...</span>
-    </div>
+[15/08/2026 05:52 ص] عبدالله فاضل | Abdluh fudil .: <p class="auth-sub">بوابتك للتعلم الطبي الشامل والمتكامل</p>
   </div>
 
   <div class="auth-card">
-    <!-- Tabs -->
     <div class="auth-tabs">
       <button class="auth-tab active" data-target="form-login">دخول</button>
-      <button class="auth-tab" data-target="form-student">حساب طالب</button>
+      <button class="auth-tab" data-target="form-student">طالب جديد</button>
       <button class="auth-tab" data-target="form-teacher">انضم كأستاذ</button>
     </div>
 
-    <!-- Login Form -->
-    <form id="form-login" class="email-form auth-form active-form" novalidate>
+    <!-- فورم تسجيل الدخول -->
+    <form id="form-login" class="auth-form active-form" novalidate>
       <div class="form-group">
         <label for="lEmail">البريد الإلكتروني</label>
         <input id="lEmail" type="email" placeholder="student@example.com" required>
@@ -83,11 +228,11 @@
       <button type="submit" class="btn-primary" id="btnLogin">تسجيل الدخول</button>
     </form>
 
-    <!-- Student Register Form -->
-    <form id="form-student" class="email-form auth-form" novalidate>
+    <!-- فورم إنشاء حساب طالب -->
+    <form id="form-student" class="auth-form" novalidate>
       <div class="form-group">
         <label for="sName">الاسم الكامل</label>
-        <input id="sName" type="text" placeholder="أحمد محمد" required>
+        <input id="sName" type="text" placeholder="مثال: أحمد محمد" required>
       </div>
       <div class="form-group">
         <label for="sEmail">البريد الإلكتروني</label>
@@ -100,21 +245,22 @@
           <button type="button" class="eye-btn" onclick="togglePass('sPass', this)" title="إظهار/إخفاء">👁</button>
         </div>
       </div>
- .: <div class="checkbox-wrap">
-        <input type="checkbox" id="sTerms" required>
-        <label for="sTerms">أوافق على <a href="terms.html" target="_blank">شروط الاستخدام</a></label>
-      </div>
       <button type="submit" class="btn-primary" id="btnStudent">إنشاء حساب طالب</button>
     </form>
-    <!-- Teacher Register Form -->
-    <form id="form-teacher" class="email-form auth-form" novalidate>
+
+    <!-- فورم طلب انضمام أستاذ -->
+    <form id="form-teacher" class="auth-form" novalidate>
       <div class="form-group">
-        <label for="tName">الاسم الكامل</label>
-        <input id="tName" type="text" placeholder="د. سارة أحمد" required>
+        <label for="tName">الاسم الكامل (مع اللقب العلمي)</label>
+        <input id="tName" type="text" placeholder="مثال: د. سارة أحمد" required>
       </div>
       <div class="form-group">
-        <label for="tEmail">البريد الإلكتروني</label>
+        <label for="tEmail">البريد الإلكتروني المهني</label>
         <input id="tEmail" type="email" placeholder="doctor@hospital.com" required>
+      </div>
+      <div class="form-group">
+        <label for="tSpecialty">التخصص الدقيق</label>
+        <input id="tSpecialty" type="text" placeholder="مثال: تشريح الأسنان" required>
       </div>
       <div class="form-group">
         <label for="tPass">كلمة المرور</label>
@@ -123,58 +269,58 @@
           <button type="button" class="eye-btn" onclick="togglePass('tPass', this)" title="إظهار/إخفاء">👁</button>
         </div>
       </div>
-      <div class="form-group">
-        <label for="tSpecialty">التخصص</label>
-        <input id="tSpecialty" type="text" placeholder="مثال: تشريح / كيمياء حيوية" required>
-      </div>
-      <div class="checkbox-wrap">
-        <input type="checkbox" id="tTerms" required>
-        <label for="tTerms">أوافق على <a href="terms.html" target="_blank">شروط الاستخدام</a></label>
-      </div>
       <button type="submit" class="btn-primary" id="btnTeacher">إرسال طلب الانضمام</button>
       
-      <!-- Success Message for Teacher -->
-      <div id="teacherSuccess" class="notice-box" style="display:none; margin-top:16px; padding: 10px; background-color: var(--success, #d4edda); color: #155724; border-radius: 5px;">
-        ✅ تم الإرسال! سيتم إشعار الإدارة بطلبك وسنقوم بتفعيل حسابك قريباً.
+      <div id="teacherSuccess" style="display:none; margin-top:16px; padding: 12px; background-color: rgba(63, 167, 150, 0.1); border-left: 4px solid var(--accent); color: var(--text-main); border-radius: 8px; font-weight: 500; font-size: 0.9rem;">
+        ✅ تم إرسال طلبك بنجاح! سيتم مراجعته من قبل الإدارة وتفعيل حسابك قريباً.
       </div>
     </form>
   </div>
 </div>
 
-<div class="toast" id="toast" role="alert"></div>
-
-<!-- ملفات الجافاسكريبت الأساسية -->
 <script>
-  // 1. نظام إظهار وإخفاء كلمة المرور
+  // 1. نظام شاشة التحميل الافتتاحية (Splash Screen)
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+        // إخفاء شاشة التحميل
+        document.getElementById('splashScreen').classList.add('splash-hidden');
+        // السماح بتمرير الصفحة وإظهار المحتوى الرئيسي بحركة ناعمة
+        document.body.style.overflow = 'auto';
+        document.getElementById('mainContent').classList.add('visible');
+    }, 2200); // الشاشة تبقى 2.2 ثانية ثم تختفي
+  });
+
+  // 2. نظام إظهار وإخفاء كلمة المرور
   function togglePass(id, btn) {
     const el = document.getElementById(id);
     const isPassword = el.type === "password";
-    el.type = isPassword ? "text" : "password";
+    el.
+[15/08/2026 05:52 ص] عبدالله فاضل | Abdluh fudil .: type = isPassword ? "text" : "password";
     btn.textContent = isPassword ? "🙈" : "👁";
   }
 
-  // 2. نظام التنقل بين النوافذ (Tabs)
+  // 3. نظام التنقل الانسيابي بين النوافذ
   const tabs = document.querySelectorAll('.auth-tab');
   const forms = document.querySelectorAll('.auth-form');
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      // إزالة الكلاس النشط من جميع التابات والفورمات
       tabs.forEach(t => t.classList.remove('active'));
       forms.forEach(f => f.classList.remove('active-form'));
       
-      // إضافة الكلاس النشط للتاب المحدد والفورم الخاص به
       tab.classList.add('active');
       const targetFormId = tab.getAttribute('data-target');
-      document.getElementById(targetFormId).classList.add('active-form');
+      
+      setTimeout(() => {
+        document.getElementById(targetFormId).classList.add('active-form');
+      }, 10);
     });
   });
 
-  // 3. نظام الوضع الليلي والنهاري المحسن
+  // 4. نظام الوضع الليلي والنهاري
   const themeBtn = document.getElementById('themeToggle');
   const htmlDoc = document.documentElement;
   
-  // التحقق من وجود تفضيل سابق للمستخدم في المتصفح
   const savedTheme = localStorage.getItem('tebbiya-theme') || 'light';
   htmlDoc.setAttribute('data-theme', savedTheme);
   themeBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
@@ -184,14 +330,15 @@
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     
     htmlDoc.setAttribute('data-theme', newTheme);
-    localStorage.setItem('tebbiya-theme', newTheme); // حفظ الاختيار
+    localStorage.setItem('tebbiya-theme', newTheme);
     
-    // تغيير الأيقونة
-    themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    themeBtn.style.transform = "rotate(360deg) scale(1)";
+    setTimeout(() => {
+        themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        themeBtn.style.transform = "rotate(0deg) scale(1)";
+    }, 150);
   });
 </script>
-
-<!-- ربط الفايربيس وملفات المصادقة الخارجية -->
 <script type="module" src="js/firebase-client.js"></script>
 <script type="module" src="js/auth-page.js"></script>
 </body>
