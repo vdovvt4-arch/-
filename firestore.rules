@@ -42,9 +42,31 @@ service cloud.firestore {
     // ---- lectures / materials (content_type: "video" | "note") ----
     match /lectures/{id} {
       allow read: if isSignedIn();
-      allow create: if isTeacherOrAdmin();
+      // allow create: admins or teachers assigned to the subject
+      allow create: if isSignedIn() && (
+        isAdmin() || (
+          isTeacher()
+          && request.resource.data.createdBy == request.auth.uid
+          && (myProfile().subjects is list)
+          && (myProfile().subjects).hasAny([request.resource.data.subjectId])
+        )
+      );
       allow update, delete: if isAdmin() ||
         (isTeacher() && resource.data.published_by == request.auth.uid);
+    }
+
+    // Materials: same constraint as lectures
+    match /materials/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (
+        isAdmin() || (
+          isTeacher()
+          && request.resource.data.createdBy == request.auth.uid
+          && (myProfile().subjects is list)
+          && (myProfile().subjects).hasAny([request.resource.data.subjectId])
+        )
+      );
+      allow update, delete: if isAdmin() || (isTeacher() && resource.data.createdBy == request.auth.uid);
     }
 
     // ---- teacher join requests ----

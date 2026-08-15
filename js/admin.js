@@ -4,24 +4,15 @@
 // lectures, materials, user management
 // ============================================================
 
+import { showToast, esc } from './utils.js';
+
 let currentAdmin = null;
 let allSubjectsCache = [];
 let currentRequestFilter = "pending";
 let currentUserFilter    = "all";
 let editingSubjectId     = null;
 
-function showToast(msg, type = "info") {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = "toast show " + type;
-  setTimeout(() => t.classList.remove("show"), 3000);
-}
 
-function esc(str) {
-  return String(str ?? "").replace(/[&<>"']/g, c =>
-    ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])
-  );
-}
 
 // ── Auth Guard ─────────────────────────────────────────────
 async function guardAdmin() {
@@ -118,7 +109,7 @@ async function loadOverview() {
 // ── Teacher Requests ─────────────────────────────────────────
 async function loadRequests() {
   const list = document.getElementById("requestsList");
-  list.innerHTML = '<div class="admin-loading">جاري التحميل...</div>';
+  list.innerHTML = `<div class="admin-loading">${(window.I18N && I18N.t('loading')) || 'جاري التحميل...'}</div>`;
   try {
     let requests = await window.Api.getTeacherRequests();
     if (currentRequestFilter !== "all")
@@ -156,18 +147,18 @@ async function loadRequests() {
 }
 
 window.approveRequest = async (uid) => {
-  if (!await confirm2("هل تريد قبول طلب الانضمام كأستاذ؟")) return;
+  if (!await confirm2((window.I18N && I18N.t('confirm_accept_teacher')) || "هل تريد قبول طلب الانضمام كأستاذ؟")) return;
   try {
     await window.Api.approveTeacherRequest(uid);
-    showToast("✅ تم قبول الطلب وترقية الحساب كأستاذ");
+    showToast((window.I18N && I18N.t('accepted_request_msg')) || "✅ تم قبول الطلب وترقية الحساب كأستاذ");
     loadRequests(); loadOverview();
   } catch (e) { showToast("خطأ: " + e.message, "error"); }
 };
 window.rejectRequest = async (uid) => {
-  if (!await confirm2("هل تريد رفض هذا الطلب؟")) return;
+  if (!await confirm2((window.I18N && I18N.t('confirm_reject_teacher')) || "هل تريد رفض هذا الطلب؟")) return;
   try {
     await window.Api.rejectTeacherRequest(uid);
-    showToast("تم رفض الطلب");
+    showToast((window.I18N && I18N.t('rejected_request_msg')) || "تم رفض الطلب");
     loadRequests();
   } catch (e) { showToast("خطأ: " + e.message, "error"); }
 };
@@ -184,7 +175,7 @@ document.querySelectorAll(".filter-btn[data-filter]").forEach(btn => {
 // ── Subjects ────────────────────────────────────────────────
 async function loadSubjects() {
   const list = document.getElementById("subjectsList");
-  list.innerHTML = '<div class="admin-loading">جاري التحميل...</div>';
+  list.innerHTML = `<div class="admin-loading">${(window.I18N && I18N.t('loading')) || 'جاري التحميل...'}</div>`;
   try {
     allSubjectsCache = await window.Api.getSubjectsWithLectureCounts();
     if (!allSubjectsCache.length) {
@@ -266,7 +257,7 @@ window.editSubject = (id) => {
 };
 
 window.deleteSubject = async (id, title) => {
-  if (!await confirm2(`هل تريد حذف مادة "${title}"؟ سيتم حذف كل محاضراتها وملازمها أيضاً.`)) return;
+  if (!await confirm2((window.I18N && I18N.t('delete_subject_confirm', { title })) || `هل تريد حذف مادة "${title}"؟ سيتم حذف كل محاضراتها وملازمها أيضاً.`)) return;
   try {
     await window.Api.deleteSubject(id);
     showToast("تم حذف المادة");
@@ -379,7 +370,7 @@ document.getElementById("addLecBtn").addEventListener("click", async () => {
 });
 
 window.deleteLecture = async (subjectId, lectureId) => {
-  if (!await confirm2("هل تريد حذف هذه المحاضرة؟")) return;
+  if (!await confirm2((window.I18N && I18N.t('delete_lecture_confirm')) || "هل تريد حذف هذه المحاضرة؟")) return;
   try {
     await window.Api.deleteLecture(subjectId, lectureId);
     showToast("تم الحذف"); loadAdminLectures(subjectId);
@@ -388,7 +379,7 @@ window.deleteLecture = async (subjectId, lectureId) => {
 
 async function loadAdminMaterials(subjectId) {
   const el = document.getElementById("adminMatList");
-  el.innerHTML = '<div class="admin-loading">جاري التحميل...</div>';
+  el.innerHTML = `<div class="admin-loading">${(window.I18N && I18N.t('loading')) || 'جاري التحميل...'}</div>`;
   try {
     const mats = await window.Api.getMaterials(subjectId);
     if (!mats.length) { el.innerHTML = '<div class="admin-empty">لا توجد ملازم</div>'; return; }
@@ -441,7 +432,7 @@ document.getElementById("addMatBtn").addEventListener("click", async () => {
 });
 
 window.deleteMaterial = async (subjectId, matId) => {
-  if (!await confirm2("هل تريد حذف هذا الملف؟")) return;
+  if (!await confirm2((window.I18N && I18N.t('delete_material_confirm')) || "هل تريد حذف هذا الملف؟")) return;
   try {
     await window.Api.deleteMaterial(subjectId, matId);
     showToast("تم الحذف"); loadAdminMaterials(subjectId);
@@ -451,7 +442,7 @@ window.deleteMaterial = async (subjectId, matId) => {
 // ── Users ────────────────────────────────────────────────────
 async function loadUsers() {
   const list = document.getElementById("usersList");
-  list.innerHTML = '<div class="admin-loading">جاري التحميل...</div>';
+  list.innerHTML = `<div class="admin-loading">${(window.I18N && I18N.t('loading')) || 'جاري التحميل...'}</div>`;
   try {
     let users = await window.Api.getAllUsers();
     if (currentUserFilter !== "all")
@@ -469,9 +460,9 @@ async function loadUsers() {
           <div class="admin-card-actions" style="gap:6px;">
             ${u.uid !== currentAdmin?.uid ? `
               <select class="role-select" onchange="changeRole('${u.uid}', this.value)">
-                <option value="student"  ${u.role === "student"  ? "selected" : ""}>طالب</option>
-                <option value="teacher"  ${u.role === "teacher"  ? "selected" : ""}>أستاذ</option>
-                <option value="admin"    ${u.role === "admin"    ? "selected" : ""}>مسؤول</option>
+                <option value="student"  ${u.role === "student"  ? "selected" : ""}>${(window.I18N?I18N.t('role_student'):'طالب')}</option>
+                <option value="teacher"  ${u.role === "teacher"  ? "selected" : ""}>${(window.I18N?I18N.t('role_teacher'):'أستاذ')}</option>
+                <option value="admin"    ${u.role === "admin"    ? "selected" : ""}>${(window.I18N?I18N.t('role_admin'):'مسؤول')}</option>
               </select>
             ` : '<span style="color:var(--ink-soft);font-size:.8rem;">أنت</span>'}
           </div>
@@ -514,9 +505,15 @@ function confirm2(msg) {
 
 // ── Helpers ────────────────────────────────────────────────
 function statusLabel(s) {
+  if(window.I18N){
+    return I18N.t('status_' + (s || '')) || s;
+  }
   return { pending: "معلّق", approved: "مقبول", rejected: "مرفوض" }[s] || s;
 }
 function roleLabel(r) {
+  if(window.I18N){
+    return I18N.t('role_' + (r || '')) || r;
+  }
   return { admin: "مسؤول", teacher: "أستاذ", student: "طالب" }[r] || r;
 }
 function formatDate(ts) {

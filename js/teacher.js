@@ -4,21 +4,12 @@
 // Guarded by role check on load
 // ============================================================
 
+import { showToast, esc } from './utils.js';
+
 let currentTeacher = null;
 let subjectsCache  = [];
 
-function showToast(msg, type = "info") {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = "toast show " + type;
-  setTimeout(() => t.classList.remove("show"), 3000);
-}
 
-function esc(str) {
-  return String(str ?? "").replace(/[&<>"']/g, c =>
-    ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])
-  );
-}
 
 // ── Auth Guard ─────────────────────────────────────────────
 async function guardTeacher() {
@@ -34,6 +25,9 @@ async function guardTeacher() {
   if (profile.role !== "teacher") { window.location.href = "app.html";   return; }
 
   currentTeacher = { ...profile, uid: user.uid };
+  // capture subjects assigned to this teacher (profile.subjects expected to be an array of ids)
+  currentTeacher.subjects = profile.subjects || [];
+
   document.getElementById("teacherName").textContent   = profile.full_name || "أستاذ";
   document.getElementById("teacherAvatar").textContent = (profile.full_name || "أ")[0];
 
@@ -72,10 +66,17 @@ document.querySelectorAll(".admin-tab[data-tsubtab]").forEach(btn => {
 // ── Load Subjects ────────────────────────────────────────────
 async function loadAllSubjects() {
   subjectsCache = await window.Api.getSubjects();
+  // if currentTeacher has assigned subjects, filter to those only
+  let allowed = subjectsCache;
+  if (currentTeacher && Array.isArray(currentTeacher.subjects) && currentTeacher.subjects.length) {
+    const set = new Set(currentTeacher.subjects);
+    allowed = subjectsCache.filter(s => set.has(s.id));
+  }
   const opts = '<option value="">اختر مادة...</option>' +
-    subjectsCache.map(s => `<option value="${s.id}">${esc(s.icon || "📘")} ${esc(s.title)}</option>`).join("");
+    allowed.map(s => `<option value="${s.id}">${esc(s.icon || "📘")} ${esc(s.title)}</option>`).join("");
   ["lecSubjectSelect", "matSubjectSelect", "myContentSubjectSelect"].forEach(id => {
-    document.getElementById(id).innerHTML = opts;
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = opts;
   });
 }
 
@@ -130,7 +131,7 @@ document.getElementById("publishLecBtn").addEventListener("click", async () => {
       file_url:     file_url || null,
       published_by: currentTeacher.uid
     });
-    showToast("✅ تم نشر المحاضرة بنجاح");
+    showToast((window.I18N && I18N.t('lecture_published')) || "✅ تم نشر المحاضرة بنجاح");
     document.getElementById("lecTitle").value = "";
     document.getElementById("lecUrl").value   = "";
     document.getElementById("lecFile").value  = "";
@@ -166,7 +167,7 @@ document.getElementById("publishMatBtn").addEventListener("click", async () => {
     await window.Api.addMaterial(subjectId, {
       title, file_url, published_by: currentTeacher.uid
     });
-    showToast("✅ تم نشر الملف بنجاح");
+    showToast((window.I18N && I18N.t('file_published')) || "✅ تم نشر الملف بنجاح");
     document.getElementById("matTitle").value = "";
     document.getElementById("matFile").value  = "";
     document.getElementById("matDrop").classList.remove("has-file");
@@ -185,11 +186,11 @@ document.getElementById("myContentSubjectSelect").addEventListener("change", asy
 
 async function loadMyLectures(subjectId) {
   const el = document.getElementById("myLecList");
-  el.innerHTML = '<div class="admin-loading">جاري التحميل...</div>';
+  el.innerHTML = `<div class="admin-loading">${(window.I18N && I18N.t('loading')) || 'جاري التحميل...'}</div>`;
   try {
     const all = await window.Api.getLectures(subjectId);
     const mine = all.filter(l => l.published_by === currentTeacher.uid);
-    if (!mine.length) { el.innerHTML = '<div class="admin-empty">لم تنشر محاضرات في هذه المادة بعد</div>'; return; }
+    if (!mine.length) { el.innerHTML = `<div class="admin-empty">${(window.I18N && I18N.t('no_my_lectures'))||'لم تنشر محاضرات في هذه المادة بعد'}</div>`; return; }
     el.innerHTML = mine.map(l => `
       <div class="admin-card">
         <div class="admin-card-header">
@@ -206,7 +207,7 @@ async function loadMyLectures(subjectId) {
 }
 
 window.deleteMyLec = async (subjectId, id) => {
-  if (!window.confirm("هل تريد حذف هذه المحاضرة؟")) return;
+  if (!window.confirm((window.I18N && I18N.t('delete_lecture_confirm')) || "هل تريد حذف هذه المحاضرة؟")) return;
   try {
     await window.Api.deleteLecture(subjectId, id);
     showToast("تم الحذف");
@@ -220,7 +221,7 @@ async function loadMyMaterials(subjectId) {
   try {
     const all = await window.Api.getMaterials(subjectId);
     const mine = all.filter(m => m.published_by === currentTeacher.uid);
-    if (!mine.length) { el.innerHTML = '<div class="admin-empty">لم تنشر ملازم في هذه المادة بعد</div>'; return; }
+    if (!mine.length) { el.innerHTML = `<div class="admin-empty">${(window.I18N && I18N.t('no_my_materials'))||'لم تنشر ملازم في هذه المادة بعد'}</div>`; return; }
     el.innerHTML = mine.map(m => `
       <div class="admin-card">
         <div class="admin-card-header">
@@ -236,7 +237,7 @@ async function loadMyMaterials(subjectId) {
 }
 
 window.deleteMyMat = async (subjectId, id) => {
-  if (!window.confirm("هل تريد حذف هذا الملف؟")) return;
+  if (!window.confirm((window.I18N && I18N.t('delete_material_confirm')) || "هل تريد حذف هذا الملف؟")) return;
   try {
     await window.Api.deleteMaterial(subjectId, id);
     showToast("تم الحذف");

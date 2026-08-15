@@ -5,12 +5,17 @@
 // role-based redirect, and the live "registered students" counter.
 // ============================================================
 
-function showToast(msg, type = "info") {
-  const t = document.getElementById("toast");
-  if (!t) return;
-  t.textContent = msg;
-  t.className = "toast show " + type;
-  setTimeout(() => t.classList.remove("show"), 3000);
+import { showToast } from './utils.js';
+
+const brandPopup = document.getElementById("brandPopup");
+if (brandPopup && !sessionStorage.getItem("brandPopupSeen")) {
+  setTimeout(() => {
+    brandPopup.classList.add("show");
+  }, 500);
+  setTimeout(() => {
+    brandPopup.classList.remove("show");
+    sessionStorage.setItem("brandPopupSeen", "1");
+  }, 2600);
 }
 
 const ERROR_MESSAGES = {
@@ -152,15 +157,19 @@ function animateCount(el, target) {
   requestAnimationFrame(tick);
 }
 
-async function loadStudentCounter() {
+// replace previous static counter with visitor-counter integration
+import VisitorCounter from './visitor-counter.js';
+
+function initVisitorUI(){
   const el = document.getElementById("liveCounterText");
-  if (!el || !window.Api) return;
-  const count = await window.Api.getStudentCount();
-  animateCount(el, count);
+  if(!el) return;
+  VisitorCounter.renderLiveCounter(el);
 }
 
-if (window.Api) {
-  loadStudentCounter();
+if (window.Api && window.Auth) {
+  // auth check may redirect — start counter as guest
+  initVisitorUI();
 } else {
-  window.addEventListener("firebase-ready", loadStudentCounter, { once: true });
+  window.addEventListener("firebase-ready", initVisitorUI, { once: true });
 }
+

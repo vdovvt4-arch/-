@@ -1,0 +1,48 @@
+// Firestore rules snippet to enforce teacher->subject publishing constraints
+// Place into your firestore.rules or adapt to your project structure.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper to read the calling user's profile document
+    function userDoc(uid){
+      return get(/databases/$(database)/documents/profiles/$(uid)).data;
+    }
+
+    // Enforce that teachers can only create lectures/materials for subjects listed
+    match /lectures/{lectureId} {
+      allow read: if true;
+      allow create: if request.auth != null && (
+        // admins can create anything
+        (userDoc(request.auth.uid).role == 'admin') ||
+        // teachers must have the subject in their profile.subjects and must be the creator
+        (
+          userDoc(request.auth.uid).role == 'teacher'
+          && request.resource.data.createdBy == request.auth.uid
+          && (userDoc(request.auth.uid).subjects is list)
+          && (userDoc(request.auth.uid).subjects).hasAny([request.resource.data.subjectId])
+        )
+      );
+      allow update, delete: if request.auth != null && (
+        userDoc(request.auth.uid).role == 'admin' || resource.data.createdBy == request.auth.uid
+      );
+    }
+
+    match /materials/{matId} {
+      allow read: if true;
+      allow create: if request.auth != null && (
+        (userDoc(request.auth.uid).role == 'admin') ||
+        (
+          userDoc(request.auth.uid).role == 'teacher'
+          && request.resource.data.createdBy == request.auth.uid
+          && (userDoc(request.auth.uid).subjects is list)
+          && (userDoc(request.auth.uid).subjects).hasAny([request.resource.data.subjectId])
+        )
+      );
+      allow update, delete: if request.auth != null && (
+        userDoc(request.auth.uid).role == 'admin' || resource.data.createdBy == request.auth.uid
+      );
+    }
+
+  }
+}

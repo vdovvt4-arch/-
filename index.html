@@ -1,345 +1,193 @@
- <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="light">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>طبيّة | المنصة التعليمية</title>
-    <meta name="theme-color" content="#14304A">
-    <link rel="manifest" href="manifest.json">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    
-    <style>
-        /* 1. المتغيرات والألوان */
-        :root {
-            --bg-body: #F4F7F9;
-            --bg-card: #FFFFFF;
-            --text-main: #14304A;
-            --text-muted: #6B7A8B;
-            --primary: #14304A;
-            --accent: #3FA796;
-            --input-bg: #F8FAFC;
-            --border-color: #E2E8F0;
-            --shadow: 0 12px 40px rgba(20, 48, 74, 0.08);
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #0F172A;
-            --bg-card: #1E293B;
-            --text-main: #F1F5F9;
-            --text-muted: #94A3B8;
-            --primary: #5EEAD4;
-            --accent: #3FA796;
-            --input-bg: #0F172A;
-            --border-color: #334155;
-            --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            font-family: 'Tajawal', sans-serif;
-            transition: background-color 0.4s ease, color 0.4s ease;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden; /* لمنع التمرير أثناء شاشة التحميل */
-        }
-
-        /* ------------------------------------------- */
-        /* 🌟 شاشة التحميل الافتتاحية (Splash Screen) */
-        /* ------------------------------------------- */
-        .splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--bg-body);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
-        }
-        
-        .splash-logo {
-            width: 180px; /* حجم لوجو التحميل */
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            animation: pulseLogo 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes pulseLogo {
-            0% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 rgba(63, 167, 150, 0.4); }
-            50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 25px rgba(63, 167, 150, 0.2); }
-            100% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 rgba(63, 167, 150, 0); }
-        }
-
-        .splash-hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        /* ------------------------------------------- */
-        /* باقي تصميم الصفحة */
-        /* ------------------------------------------- */
-        .auth-wrap {
-            width: 100%;
-            max-width: 420px;
-            padding: 20px;
-            box-sizing: border-box;
-            opacity: 0; /* يبدأ مخفياً حتى تنتهي شاشة التحميل */
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .auth-wrap.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .auth-hero {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .site-logo {
-            width: 120px;
-            height: auto;
-            margin: 0 auto 15px auto;
-            display: block;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-        .site-logo:hover { transform: scale(1.05); }
-        .
- auth-title { font-size: 2rem; font-weight: 900; margin: 0 0 5px 0; color: var(--text-main); }
-        .auth-sub { font-size: 1rem; color: var(--text-muted); margin: 0; }
-
-        .auth-card {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            transition: background-color 0.4s ease, box-shadow 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .auth-tabs {
-            display: flex;
-            background: var(--input-bg);
-            border-radius: 16px;
-            padding: 5px;
-            margin-bottom: 25px;
-            border: 1px solid var(--border-color);
-        }
-        .auth-tab {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 10px 0;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .auth-tab:hover { color: var(--text-main); }
-        .auth-tab.active {
-            background: var(--bg-card);
-            color: var(--primary);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .form-group { margin-bottom: 18px; text-align: right; }
-        .form-group label { display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
-        .form-group input {
-            width: 100%; padding: 14px 16px; background: var(--input-bg); border: 2px solid var(--border-color);
-            border-radius: 12px; font-family: inherit; font-size: 0.95rem; color: var(--text-main); box-sizing: border-box; transition: all 0.3s ease;
-        }
-        .form-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(63, 167, 150, 0.15); background: var(--bg-card); }
-        .password-wrap { position: relative; }
-        .eye-btn { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); transition: color 0.3s; }
-        .eye-btn:hover { color: var(--accent); }
-
-        .btn-primary {
-            width: 100%; background: linear-gradient(135deg, var(--accent), #2b8274); color: white; border: none; padding: 14px; border-radius: 12px;
-            font-family: inherit; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 15px rgba(63, 167, 150, 0.3); margin-top: 10px;
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(63, 167, 150, 0.4); }
-        .btn-primary:active { transform: translateY(1px); }
-
-        .auth-form { display: none; }
-        .auth-form.active-form { display: block; animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-
-        .theme-toggle-btn {
-            position: fixed; top: 20px; left: 20px; background: var(--bg-card); border: 1px solid var(--border-color); width: 45px; height: 45px;
-            border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: var(--shadow); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; z-index: 1000;
-        }
-        .theme-toggle-btn:hover { transform: rotate(15deg) scale(1.1); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>طبيّة | المنصة التعليمية</title>
+<meta name="theme-color" content="#14304A">
+<link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="shortcut icon" href="icon-192.png">
+<script>
+  (function(){
+    var t = localStorage.getItem('tibbiya-theme') ||
+      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- شاشة التحميل الافتتاحية (Splash Screen) -->
-<div id="splashScreen" class="splash-screen">
-    <img src="images/logo.png" alt="تحميل..." class="splash-logo">
-</div>
+<!-- Theme Toggle -->
+<button class="theme-toggle-btn" id="themeToggle" style="position:absolute; top:20px; left:20px;" aria-label="تبديل النمط">🌙</button>
+  <button id="langToggle" data-i18n-lang-label style="position:absolute; top:20px; left:80px; background:transparent; border:0; font-weight:800; cursor:pointer;">English</button>
 
-<!-- زر تبديل الوضع الليلي/النهاري -->
-<button class="theme-toggle-btn" id="themeToggle" aria-label="تبديل النمط" title="تغيير المظهر">🌙</button>
-
-<div class="auth-wrap" id="mainContent">
+<div class="auth-wrap">
   <div class="auth-hero">
-    <img src="images/logo.png" alt="لوجو منصة طبية" class="site-logo">
+    <svg class="mark" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="32" fill="var(--primary)"/>
+      <path d="M18 50 V24 A14 14 0 0 1 46 24 V50 Z" fill="var(--bg-main)"/>
+      <rect x="6" y="20" width="9" height="32" rx="1.5" fill="var(--accent)" transform="rotate(-28 15 52)"/>
+      <rect x="49" y="20" width="9" height="32" rx="1.5" fill="var(--accent)" transform="rotate(28 49 52)"/>
+    </svg>
     <h1 class="auth-title">منصة طبيّة 🩺</h1>
-[15/08/2026 05:52 ص] عبدالله فاضل | Abdluh fudil .: <p class="auth-sub">بوابتك للتعلم الطبي الشامل والمتكامل</p>
+    <p class="auth-sub">بوابتك للتعلم الطبي الشامل والمتكامل</p>
+
+    <div class="live-counter">
+      <div class="pulse-dot"></div>
+      <span id="liveCounterText">يتم حساب الطلاب...</span>
+    </div>
   </div>
 
   <div class="auth-card">
     <div class="auth-tabs">
-      <button class="auth-tab active" data-target="form-login">دخول</button>
-      <button class="auth-tab" data-target="form-student">طالب جديد</button>
-      <button class="auth-tab" data-target="form-teacher">انضم كأستاذ</button>
+      <button class="auth-tab active" data-tab="login">دخول</button>
+      <button class="auth-tab" data-tab="student">حساب طالب</button>
+      <button class="auth-tab" data-tab="teacher">انضم كأستاذ</button>
     </div>
 
-    <!-- فورم تسجيل الدخول -->
-    <form id="form-login" class="auth-form active-form" novalidate>
+    <!-- Login Form -->
+    <form id="form-login" class="email-form" novalidate>
       <div class="form-group">
-        <label for="lEmail">البريد الإلكتروني</label>
+        <label>البريد الإلكتروني</label>
         <input id="lEmail" type="email" placeholder="student@example.com" required>
       </div>
       <div class="form-group">
-        <label for="lPass">كلمة المرور</label>
+        <label>كلمة المرور</label>
         <div class="password-wrap">
           <input id="lPass" type="password" placeholder="••••••••" required>
-          <button type="button" class="eye-btn" onclick="togglePass('lPass', this)" title="إظهار/إخفاء">👁</button>
+          <button type="button" class="eye-btn" onclick="togglePass('lPass', this)">👁️</button>
         </div>
       </div>
-      <button type="submit" class="btn-primary" id="btnLogin">تسجيل الدخول</button>
+      <button type="submit" class="btn-primary" id="btnLogin">دخول</button>
     </form>
 
-    <!-- فورم إنشاء حساب طالب -->
-    <form id="form-student" class="auth-form" novalidate>
+    <!-- Student Register Form -->
+    <form id="form-student" class="email-form" style="display:none;" novalidate>
       <div class="form-group">
-        <label for="sName">الاسم الكامل</label>
-        <input id="sName" type="text" placeholder="مثال: أحمد محمد" required>
+        <label>الاسم الكامل</label>
+        <input id="sName" type="text" placeholder="أحمد محمد" required>
       </div>
       <div class="form-group">
-        <label for="sEmail">البريد الإلكتروني</label>
+        <label>البريد الإلكتروني</label>
         <input id="sEmail" type="email" placeholder="student@example.com" required>
       </div>
       <div class="form-group">
-        <label for="sPass">كلمة المرور</label>
+        <label>كلمة المرور</label>
         <div class="password-wrap">
           <input id="sPass" type="password" placeholder="6 أحرف على الأقل" required>
-          <button type="button" class="eye-btn" onclick="togglePass('sPass', this)" title="إظهار/إخفاء">👁</button>
+          <button type="button" class="eye-btn" onclick="togglePass('sPass', this)">👁️</button>
         </div>
+      </div>
+      <div class="checkbox-wrap">
+        <input type="checkbox" id="sTerms" required>
+        <label for="sTerms">أوافق على <a href="terms.html" target="_blank">شروط الاستخدام</a></label>
       </div>
       <button type="submit" class="btn-primary" id="btnStudent">إنشاء حساب طالب</button>
     </form>
 
-    <!-- فورم طلب انضمام أستاذ -->
-    <form id="form-teacher" class="auth-form" novalidate>
+    <!-- Teacher Register Form -->
+    <form id="form-teacher" class="email-form" style="display:none;" novalidate>
       <div class="form-group">
-        <label for="tName">الاسم الكامل (مع اللقب العلمي)</label>
-        <input id="tName" type="text" placeholder="مثال: د. سارة أحمد" required>
+        <label>الاسم الكامل</label>
+        <input id="tName" type="text" placeholder="د. سارة أحمد" required>
       </div>
       <div class="form-group">
-        <label for="tEmail">البريد الإلكتروني المهني</label>
+        <label>البريد الإلكتروني</label>
         <input id="tEmail" type="email" placeholder="doctor@hospital.com" required>
       </div>
       <div class="form-group">
-        <label for="tSpecialty">التخصص الدقيق</label>
-        <input id="tSpecialty" type="text" placeholder="مثال: تشريح الأسنان" required>
-      </div>
-      <div class="form-group">
-        <label for="tPass">كلمة المرور</label>
+        <label>كلمة المرور</label>
         <div class="password-wrap">
           <input id="tPass" type="password" placeholder="••••••••" required>
-          <button type="button" class="eye-btn" onclick="togglePass('tPass', this)" title="إظهار/إخفاء">👁</button>
+          <button type="button" class="eye-btn" onclick="togglePass('tPass', this)">👁️</button>
         </div>
       </div>
+      <div class="form-group">
+        <label>التخصص</label>
+        <input id="tSpecialty" type="text" placeholder="تشريح / كيمياء حيوية ..." required>
+      </div>
+      <div class="checkbox-wrap">
+        <input type="checkbox" id="tTerms" required>
+        <label for="tTerms">أوافق على <a href="terms.html" target="_blank">شروط الاستخدام</a></label>
+      </div>
       <button type="submit" class="btn-primary" id="btnTeacher">إرسال طلب الانضمام</button>
-      
-      <div id="teacherSuccess" style="display:none; margin-top:16px; padding: 12px; background-color: rgba(63, 167, 150, 0.1); border-left: 4px solid var(--accent); color: var(--text-main); border-radius: 8px; font-weight: 500; font-size: 0.9rem;">
-        ✅ تم إرسال طلبك بنجاح! سيتم مراجعته من قبل الإدارة وتفعيل حسابك قريباً.
+
+      <!-- Success Message for Teacher -->
+      <div id="teacherSuccess" class="notice-box" style="display:none; margin-top:16px;">
+        ✅ تم الإرسال! سيتم إشعار الإدارة بطلبك وسنقوم بتفعيل حسابك قريباً.
       </div>
     </form>
+
   </div>
 </div>
 
-<script>
-  // 1. نظام شاشة التحميل الافتتاحية (Splash Screen)
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-        // إخفاء شاشة التحميل
-        document.getElementById('splashScreen').classList.add('splash-hidden');
-        // السماح بتمرير الصفحة وإظهار المحتوى الرئيسي بحركة ناعمة
-        document.body.style.overflow = 'auto';
-        document.getElementById('mainContent').classList.add('visible');
-    }, 2200); // الشاشة تبقى 2.2 ثانية ثم تختفي
-  });
+<div class="toast" id="toast" role="alert"></div>
 
-  // 2. نظام إظهار وإخفاء كلمة المرور
+<div class="brand-popup" id="brandPopup" aria-live="polite">
+  <div class="brand-popup-card">
+    <img class="brand-popup-image" src="assets/brand-popup.jpg" alt="The easiest in dentistry" />
+  </div>
+</div>
+
+<!-- Dev panel: only visible on local files for testing -->
+<div id="devPanel" style="position:fixed; right:12px; bottom:120px; z-index:9999; display:none; gap:8px; flex-direction:column;">
+  <button class="btn-primary" onclick="(function(){ localStorage.setItem('tibbiya_current_user', JSON.stringify('demo_student')); alert('تسجيل دخول كمستخدم demo_student'); window.location.href='app.html'; })()">دخول كطالب (demo_student)</button>
+  <button class="btn-primary" onclick="(function(){ localStorage.setItem('tibbiya_current_user', JSON.stringify('demo_teacher')); alert('تسجيل دخول كمستخدم demo_teacher'); window.location.href='teacher.html'; })()">دخول كأستاذ (demo_teacher)</button>
+  <button class="btn-primary" onclick="(function(){ localStorage.setItem('tibbiya_current_user', JSON.stringify('demo_admin')); alert('تسجيل دخول كمسؤول (demo_admin)'); window.location.href='admin.html'; })()">دخول كمسؤول (demo_admin)</button>
+  <button class="btn-primary" style="background:#D64545" onclick="(function(){ localStorage.removeItem('tibbiya_current_user'); localStorage.removeItem('tibbiya_current_profile'); sessionStorage.removeItem('tibbiya_session_id'); alert('تم تسجيل الخروج المحلي'); window.location.href='index.html'; })()">مسح تسجيل الدخول المحلي</button>
+</div>
+
+<script>
   function togglePass(id, btn) {
     const el = document.getElementById(id);
-    const isPassword = el.type === "password";
-    el.
-[15/08/2026 05:52 ص] عبدالله فاضل | Abdluh fudil .: type = isPassword ? "text" : "password";
-    btn.textContent = isPassword ? "🙈" : "👁";
+    el.type = el.type === "password" ? "text" : "password";
+    btn.textContent = el.type === "password" ? "👁️" : "🙈";
   }
+  // show devPanel when running locally (file://) or on localhost
+  try{
+    if(location.protocol === 'file:' || location.hostname === 'localhost'){
+      document.getElementById('devPanel').style.display = 'flex';
+    }
+  }catch(e){}
+</script>
 
-  // 3. نظام التنقل الانسيابي بين النوافذ
-  const tabs = document.querySelectorAll('.auth-tab');
-  const forms = document.querySelectorAll('.auth-form');
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-contact">
+      <div class="footer-qr">
+        <a href="https://t.me/FordeReter" target="_blank" rel="noopener">
+          <img src="assets/telegram-qr.png" alt="QR تليجرام">
+        </a>
+      </div>
+      <div class="footer-text">
+        <h4>تواصل معنا</h4>
+        <p><a class="telegram-link" href="https://t.me/FordeReter" target="_blank" rel="noopener">تابعنا على تليجرام</a></p>
+      </div>
+    </div>
+    <div class="footer-note">© 2026 طبيّة — جميع الحقوق محفوظة</div>
+  </div>
+</footer>
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      forms.forEach(f => f.classList.remove('active-form'));
-      
-      tab.classList.add('active');
-      const targetFormId = tab.getAttribute('data-target');
-      
-      setTimeout(() => {
-        document.getElementById(targetFormId).classList.add('active-form');
-      }, 10);
+<script src="js/i18n.js"></script>
+<script type="module" src="js/firebase-client.js"></script>
+<script src="js/theme.js"></script>
+<script type="module" src="js/visitor-counter.js"></script>
+<script type="module" src="js/auth-page.js"></script>
+<script>
+  // language toggle handler
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('langToggle');
+    if(!btn) return;
+    btn.addEventListener('click', () => {
+      const cur = I18N.get();
+      I18N.set(cur === 'ar' ? 'en' : 'ar');
+      // after toggle, refresh page text if needed
     });
   });
-
-  // 4. نظام الوضع الليلي والنهاري
-  const themeBtn = document.getElementById('themeToggle');
-  const htmlDoc = document.documentElement;
-  
-  const savedTheme = localStorage.getItem('tebbiya-theme') || 'light';
-  htmlDoc.setAttribute('data-theme', savedTheme);
-  themeBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-
-  themeBtn.addEventListener('click', () => {
-    const currentTheme = htmlDoc.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    htmlDoc.setAttribute('data-theme', newTheme);
-    localStorage.setItem('tebbiya-theme', newTheme);
-    
-    themeBtn.style.transform = "rotate(360deg) scale(1)";
-    setTimeout(() => {
-        themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-        themeBtn.style.transform = "rotate(0deg) scale(1)";
-    }, 150);
-  });
 </script>
-<script type="module" src="js/firebase-client.js"></script>
-<script type="module" src="js/auth-page.js"></script>
 </body>
 </html>

@@ -6,6 +6,8 @@
 <title>طبيّة | لوحة الأستاذ</title>
 <meta name="theme-color" content="#14304A">
 <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="shortcut icon" href="icon-192.png">
 <script>
   (function(){
     var t = localStorage.getItem('tibbiya-theme') ||
@@ -16,6 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script src="js/i18n.js"></script>
 </head>
 <body class="admin-body">
 
@@ -31,7 +34,7 @@
         <rect x="6" y="20" width="9" height="32" rx="1.5" fill="var(--accent)" transform="rotate(-28 15 52)"/>
         <rect x="49" y="20" width="9" height="32" rx="1.5" fill="var(--accent)" transform="rotate(28 49 52)"/>
       </svg>
-      <div><div class="admin-brand-name">طبيّة</div><div class="admin-brand-sub">لوحة الأستاذ</div></div>
+      <div><div class="admin-brand-name" data-i18n="site_title">طبيّة</div><div class="admin-brand-sub">لوحة الأستاذ</div></div>
     </div>
     <nav class="admin-nav">
       <button class="admin-nav-item active" data-tpanel="tp-lectures"><span class="nav-icon">🎬</span> نشر فيديو</button>
@@ -46,8 +49,9 @@
           <div class="admin-user-role">Teacher</div>
         </div>
       </div>
-      <div style="display:flex; gap:8px;">
+      <div style="display:flex; gap:8px; align-items:center;">
         <button class="theme-toggle-btn" id="themeToggle" style="flex:0 0 auto;">🌙</button>
+        <button id="langToggle" data-i18n-lang-label class="link-btn" style="background:transparent;border:0;font-weight:800;cursor:pointer;margin-inline-start:8px;">English</button>
         <button class="admin-logout-btn" id="teacherLogoutBtn" style="flex:1;">🚪 خروج</button>
       </div>
     </div>
@@ -117,8 +121,35 @@
 
 <div class="toast" id="toast" role="alert"></div>
 
+<footer class="site-footer admin-footer">
+  <div class="footer-inner">
+    <div class="footer-contact">
+      <div class="footer-qr">
+        <a href="https://t.me/FordeReter" target="_blank" rel="noopener">
+          <img src="assets/telegram-qr.png" alt="QR تليجرام">
+        </a>
+      </div>
+      <div class="footer-text">
+        <h4>تواصل معنا</h4>
+        <p><a class="telegram-link" href="https://t.me/FordeReter" target="_blank" rel="noopener">تابعنا على تليجرام</a></p>
+      </div>
+    </div>
+    <div class="footer-note">© 2026 طبيّة — جميع الحقوق محفوظة</div>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
 <script type="module" src="js/firebase-client.js"></script>
 <script src="js/theme.js"></script>
 <script type="module" src="js/teacher.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const btns = document.querySelectorAll('#langToggle');
+    btns.forEach(btn=>btn.addEventListener('click', ()=>{
+      const cur = I18N.get();
+      I18N.set(cur === 'ar' ? 'en' : 'ar');
+    }));
+  });
+</script>
 </body>
 </html>
