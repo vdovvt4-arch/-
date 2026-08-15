@@ -68,13 +68,13 @@ async function ensureUserDocs(user, extra = {}) {
   if (!existing.exists()) {
     await withRetry(() => setDoc(profileRef, {
       full_name: extra.full_name  user.displayName  "طالب جديد",
-      username: extra.username || randomUsername(),
+      username: extra.username || randomUsername(2),
       email: user.email  extra.email  null,
       avatar_url: user.photoURL || null,
       academic_year: 2,
       role: "student",
       welcomed: false,
-      created_at: serverTimestamp()
+      created_at: serverTimestamp(6)
     }));
     await withRetry(() => setDoc(doc(db, "streaks", user.uid), {
       current_streak: 0,
