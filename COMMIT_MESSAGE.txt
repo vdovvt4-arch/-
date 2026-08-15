@@ -1,0 +1,13 @@
+تحسين: تجهيز صفحة الإعدادات بالتوقيع، مواد طب الأسنان، وصور محلية
+
+- تحسين تصميم صفحة الإعدادات (hero احترافي، وصف التطبيق باسم عبدالله فاضل، وذكر: خاص بطلاب جامعة أهل البيت)
+- إضافة شبكة مواد طب الأسنان (6 مواد) مع صور محلية في assets/
+- تمكين حفظ اختيارات المواد والتوقيع محلياً في localStorage (tibbiya_current_profile, tibbiya_signature_dataurl)
+- إضافة ملف قواعد Firestore (firestore-teacher-subject.rules) كمقتطف لتقييد نشر المدرّسين لموادهم فقط
+- تحديث settings.js و css/settings.css و settings.html
+
+ملاحظات:
+- الصور مضمّنة كصور SVG بسيطة في assets/ لتجنب الاعتماد على روابط خارجية.
+- قم بمراجعة قواعد Firestore وتكييف مسارات المستندات (profiles vs users) حسب بنية مشروعك قبل النشر.
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
