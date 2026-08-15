@@ -195,7 +195,7 @@ async function bootstrap() {
     const subjects = await window.Api.getSubjectsWithLectureCounts();
     renderSubjects(subjects);
   } catch (e) {
-    document.getElementById("subjectsGrid").innerHTML = `<div class="admi"n-error">تعذر تحميل المواد</div>`;
+    document.getElementById("subjectsGrid").innerHTML = `<div class="admin-error">تعذر تحميل المواد</div>`;
   }
 }
 

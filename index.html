@@ -33,50 +33,50 @@
       <rect x="6" y="20" width="9" height="32" rx="1.5" fill="var(--accent)" transform="rotate(-28 15 52)"/>
       <rect x="49" y="20" width="9" height="32" rx="1.5" fill="var(--accent)" transform="rotate(28 49 52)"/>
     </svg>
-    <h1 class="auth-title">منصة طبيّة 🩺</h1>
-    <p class="auth-sub">بوابتك للتعلم الطبي الشامل والمتكامل</p>
+    <h1 class="auth-title" data-i18n="auth_title">منصة طبيّة 🩺</h1>
+    <p class="auth-sub" data-i18n="auth_sub">بوابتك للتعلم الطبي الشامل والمتكامل</p>
 
     <div class="live-counter">
       <div class="pulse-dot"></div>
-      <span id="liveCounterText">يتم حساب الطلاب...</span>
+      <span id="liveCounterText" data-i18n="loading">يتم حساب الطلاب...</span>
     </div>
   </div>
 
   <div class="auth-card">
     <div class="auth-tabs">
-      <button class="auth-tab active" data-tab="login">دخول</button>
-      <button class="auth-tab" data-tab="student">حساب طالب</button>
-      <button class="auth-tab" data-tab="teacher">انضم كأستاذ</button>
+      <button class="auth-tab active" data-tab="login" data-i18n="login_tab">دخول</button>
+      <button class="auth-tab" data-tab="student" data-i18n="student_tab">حساب طالب</button>
+      <button class="auth-tab" data-tab="teacher" data-i18n="teacher_tab">انضم كأستاذ</button>
     </div>
 
     <!-- Login Form -->
     <form id="form-login" class="email-form" novalidate>
       <div class="form-group">
-        <label>البريد الإلكتروني</label>
-        <input id="lEmail" type="email" placeholder="student@example.com" required>
+        <label data-i18n="email_label">البريد الإلكتروني</label>
+        <input id="lEmail" type="email" data-i18n-placeholder="email_label" placeholder="student@example.com" required>
       </div>
       <div class="form-group">
-        <label>كلمة المرور</label>
+        <label data-i18n="password_label">كلمة المرور</label>
         <div class="password-wrap">
           <input id="lPass" type="password" placeholder="••••••••" required>
           <button type="button" class="eye-btn" onclick="togglePass('lPass', this)">👁️</button>
         </div>
       </div>
-      <button type="submit" class="btn-primary" id="btnLogin">دخول</button>
+      <button type="submit" class="btn-primary" id="btnLogin" data-i18n="login_button">دخول</button>
     </form>
 
     <!-- Student Register Form -->
     <form id="form-student" class="email-form" style="display:none;" novalidate>
       <div class="form-group">
-        <label>الاسم الكامل</label>
+        <label data-i18n="full_name_label">الاسم الكامل</label>
         <input id="sName" type="text" placeholder="أحمد محمد" required>
       </div>
       <div class="form-group">
-        <label>البريد الإلكتروني</label>
+        <label data-i18n="email_label">البريد الإلكتروني</label>
         <input id="sEmail" type="email" placeholder="student@example.com" required>
       </div>
       <div class="form-group">
-        <label>كلمة المرور</label>
+        <label data-i18n="password_label">كلمة المرور</label>
         <div class="password-wrap">
           <input id="sPass" type="password" placeholder="6 أحرف على الأقل" required>
           <button type="button" class="eye-btn" onclick="togglePass('sPass', this)">👁️</button>
@@ -84,40 +84,40 @@
       </div>
       <div class="checkbox-wrap">
         <input type="checkbox" id="sTerms" required>
-        <label for="sTerms">أوافق على <a href="terms.html" target="_blank">شروط الاستخدام</a></label>
+        <label for="sTerms"><span data-i18n="terms_accept">أوافق على</span> <a href="terms.html" target="_blank" data-i18n="terms_link">شروط الاستخدام</a></label>
       </div>
-      <button type="submit" class="btn-primary" id="btnStudent">إنشاء حساب طالب</button>
+      <button type="submit" class="btn-primary" id="btnStudent" data-i18n="student_register_button">إنشاء حساب طالب</button>
     </form>
 
     <!-- Teacher Register Form -->
     <form id="form-teacher" class="email-form" style="display:none;" novalidate>
       <div class="form-group">
-        <label>الاسم الكامل</label>
+        <label data-i18n="full_name_label">الاسم الكامل</label>
         <input id="tName" type="text" placeholder="د. سارة أحمد" required>
       </div>
       <div class="form-group">
-        <label>البريد الإلكتروني</label>
+        <label data-i18n="email_label">البريد الإلكتروني</label>
         <input id="tEmail" type="email" placeholder="doctor@hospital.com" required>
       </div>
       <div class="form-group">
-        <label>كلمة المرور</label>
+        <label data-i18n="password_label">كلمة المرور</label>
         <div class="password-wrap">
           <input id="tPass" type="password" placeholder="••••••••" required>
           <button type="button" class="eye-btn" onclick="togglePass('tPass', this)">👁️</button>
         </div>
       </div>
       <div class="form-group">
-        <label>التخصص</label>
+        <label data-i18n="specialty_label">التخصص</label>
         <input id="tSpecialty" type="text" placeholder="تشريح / كيمياء حيوية ..." required>
       </div>
       <div class="checkbox-wrap">
         <input type="checkbox" id="tTerms" required>
-        <label for="tTerms">أوافق على <a href="terms.html" target="_blank">شروط الاستخدام</a></label>
+        <label for="tTerms"><span data-i18n="terms_accept">أوافق على</span> <a href="terms.html" target="_blank" data-i18n="terms_link">شروط الاستخدام</a></label>
       </div>
-      <button type="submit" class="btn-primary" id="btnTeacher">إرسال طلب الانضمام</button>
+      <button type="submit" class="btn-primary" id="btnTeacher" data-i18n="teacher_register_button">إرسال طلب الانضمام</button>
 
       <!-- Success Message for Teacher -->
-      <div id="teacherSuccess" class="notice-box" style="display:none; margin-top:16px;">
+      <div id="teacherSuccess" class="notice-box" style="display:none; margin-top:16px;" data-i18n="join_teacher_success">
         ✅ تم الإرسال! سيتم إشعار الإدارة بطلبك وسنقوم بتفعيل حسابك قريباً.
       </div>
     </form>

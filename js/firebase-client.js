@@ -172,6 +172,67 @@ const OfflineAI = {
   }
 };
 
+function normalizeUserId(userId) {
+  return String(userId ?? "").trim();
+}
+
+function buildDefaultProfile(userId, source = {}) {
+  const uid = normalizeUserId(userId);
+  const email = String(source.email || "").trim();
+  const fullName = String(source.full_name || source.displayName || (email ? email.split("@")[0] : "طالب جديد")).trim() || "طالب جديد";
+  const role = source.role || OfflineAI.classifyRole({ full_name: fullName, email }, "student");
+  const username = String(source.username || `user_${uid.slice(-6) || randomId("user")}`).trim();
+
+  return {
+    id: uid,
+    uid,
+    full_name: fullName,
+    username,
+    email: email || null,
+    avatar_url: source.avatar_url || source.photoURL || "",
+    academic_year: Number(source.academic_year || 2),
+    role,
+    welcomed: Boolean(source.welcomed),
+    created_at: source.created_at || new Date().toISOString(),
+    streak: Number(source.streak || 0),
+    points: Number(source.points || 0),
+    activity_count: Number(source.activity_count || 0),
+    subjects: Array.isArray(source.subjects) ? source.subjects : []
+  };
+}
+
+function ensureLocalProfileRecord(userId, source = {}) {
+  const uid = normalizeUserId(userId);
+  if (!uid) return null;
+
+  const profiles = readStorage("tibbiya_profiles", []);
+  const existing = profiles.find((item) => item.uid === uid || item.id === uid);
+  if (existing) {
+    return { ...existing, id: existing.id || uid, uid: existing.uid || uid };
+  }
+
+  const profile = buildDefaultProfile(uid, source);
+  profiles.push(profile);
+  writeStorage("tibbiya_profiles", profiles);
+  return profile;
+}
+
+async function hydrateMissingProfile(userId, source = {}) {
+  const uid = normalizeUserId(userId);
+  if (!uid) return null;
+
+  const localProfile = ensureLocalProfileRecord(uid, source);
+  if (isOfflineMode || !db) return localProfile;
+
+  try {
+    const profile = buildDefaultProfile(uid, source);
+    await setDoc(doc(db, "profiles", uid), profile);
+    return profile;
+  } catch (e) {
+    return localProfile;
+  }
+}
+
 function ensureUserDocs(user, extra = {}) {
   const profileRef = doc(db, "profiles", user.uid);
   return getDoc(profileRef).then((existing) => {
@@ -335,23 +396,69 @@ onAuthStateChanged(callback) {
 
 const Api = {
   async getProfile(userId) {
+    const uid = normalizeUserId(userId);
+    if (!uid) return null;
+
     if (isOfflineMode || !db) {
       const profiles = readStorage("tibbiya_profiles", []);
-      const profile = profiles.find((item) => item.uid === userId || item.id === userId);
-      return profile ? { id: userId, uid: userId, ...profile } : null;
+      const profile = profiles.find((item) => item.uid === uid || item.id === uid);
+      if (profile) return { id: uid, uid, ...profile };
+
+      const authUser = auth?.currentUser && auth.currentUser.uid === uid ? auth.currentUser : null;
+      const fallback = buildDefaultProfile(uid, {
+        email: authUser?.email || "",
+        displayName: authUser?.displayName || "",
+        photoURL: authUser?.photoURL || "",
+        role: "student"
+      });
+      return ensureLocalProfileRecord(uid, fallback);
     }
+
     try {
-      const snap = await getDoc(doc(db, "profiles", userId));
-      return snap.exists() ? { id: userId, uid: userId, ...snap.data() } : null;
+      const snap = await getDoc(doc(db, "profiles", uid));
+      if (snap.exists()) {
+        return { id: uid, uid, ...snap.data() };
+      }
+
+      const authUser = auth?.currentUser && auth.currentUser.uid === uid ? auth.currentUser : null;
+      return await hydrateMissingProfile(uid, {
+        email: authUser?.email || "",
+        full_name: authUser?.displayName || "",
+        displayName: authUser?.displayName || "",
+        avatar_url: authUser?.photoURL || "",
+        photoURL: authUser?.photoURL || "",
+        role: "student"
+      });
     } catch (e) {
-      return Api.getProfileOffline(userId);
+      const authUser = auth?.currentUser && auth.currentUser.uid === uid ? auth.currentUser : null;
+      return ensureLocalProfileRecord(uid, {
+        email: authUser?.email || "",
+        full_name: authUser?.displayName || "",
+        displayName: authUser?.displayName || "",
+        avatar_url: authUser?.photoURL || "",
+        photoURL: authUser?.photoURL || "",
+        role: "student"
+      });
     }
   },
 
   async getProfileOffline(userId) {
+    const uid = normalizeUserId(userId);
+    if (!uid) return null;
+
     const profiles = readStorage("tibbiya_profiles", []);
-    const profile = profiles.find((item) => item.uid === userId || item.id === userId);
-    return profile ? { id: userId, uid: userId, ...profile } : null;
+    const profile = profiles.find((item) => item.uid === uid || item.id === uid);
+    if (profile) return { id: uid, uid, ...profile };
+
+    const authUser = auth?.currentUser && auth.currentUser.uid === uid ? auth.currentUser : null;
+    return ensureLocalProfileRecord(uid, {
+      email: authUser?.email || "",
+      full_name: authUser?.displayName || "",
+      displayName: authUser?.displayName || "",
+      avatar_url: authUser?.photoURL || "",
+      photoURL: authUser?.photoURL || "",
+      role: "student"
+    });
   },
 
   async updateProfile(userId, fields) {
