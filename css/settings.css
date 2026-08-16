@@ -25,10 +25,46 @@
 .btn-subject{ padding:8px 10px; border-radius:8px; border:0; background:linear-gradient(90deg,#2D8CFF,#6AAAE3); color:#fff; cursor:pointer; font-weight:800; }
 .btn-subject.secondary{ background:#EEE; color:var(--ink); box-shadow:none; }
 
+.contact-card{
+  display:flex; align-items:center; gap:16px;
+  background:var(--surface-2); border:1.5px solid var(--line); border-radius:var(--radius-md);
+  padding:18px; text-decoration:none; color:inherit;
+  transition:transform .15s ease, box-shadow .15s ease;
+  text-align:right;
+}
+.contact-card:hover{
+  transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,.12);
+  border-color:var(--accent-2);
+}
+.contact-icon{
+  width:56px; height:56px; border-radius:50%; background:var(--surface);
+  display:flex; align-items:center; justify-content:center; font-size:1.6rem;
+  flex-shrink:0;
+}
+.contact-info h3{ margin:0 0 4px; font-weight:900; font-size:1.05rem; }
+.contact-info p{ margin:0 0 8px; color:var(--ink-soft); font-size:.92rem; font-weight:600; }
+.contact-action{ color:var(--accent-2); font-weight:800; font-size:.85rem; }
+
+.password-wrap{ position:relative; }
+.password-wrap input{ padding-inline-start:44px; }
+.eye-btn{
+  position:absolute; inline-start:6px; top:50%; transform:translateY(-50%);
+  background:none; border:none; font-size:1.05rem; padding:8px; cursor:pointer;
+}
+
 .footer-inner{ display:flex; gap:18px; align-items:center; justify-content:space-between; }
 .footer-contact{ display:flex; gap:12px; align-items:center; }
 .footer-qr img{ width:72px; height:72px; object-fit:cover; border-radius:8px; }
 
-@media (max-width:900px){ .subjects-grid{ grid-template-columns:repeat(2,1fr); } .settings-hero .hero-img{ display:none; } .settings-hero{ flex-direction:column; }
+@media (max-width:900px){ 
+  .subjects-grid{ grid-template-columns:repeat(2,1fr); } 
+  .settings-hero .hero-img{ display:none; } 
+  .settings-hero{ flex-direction:column; }
 }
-@media (max-width:600px){ .subjects-grid{ grid-template-columns:1fr; } .signature-img{ max-width:240px; } .settings-card{ padding:16px; } }
+@media (max-width:600px){ 
+  .subjects-grid{ grid-template-columns:1fr; } 
+  .signature-img{ max-width:240px; } 
+  .settings-card{ padding:16px; }
+  .contact-card{ flex-direction:column; text-align:center; }
+  .contact-icon{ width:48px; height:48px; font-size:1.4rem; }
+}

@@ -37,6 +37,15 @@ const firebaseConfig = {
   measurementId: "G-FC1LSMTF9G"
 };
 
+const DEFAULT_SITE_SETTINGS = {
+  siteTitle: "طبيّة",
+  primaryColor: "#14304A",
+  footerText: "© 2026 طبيّة — جميع الحقوق محفوظة",
+  telegramLink: "https://t.me/FordeReter",
+  logoUrl: "",
+  themeMode: "light"
+};
+
 const isLocalFileMode = window.location.protocol === "file:";
 const isOfflineMode = isLocalFileMode || !navigator.onLine;
 
@@ -97,26 +106,31 @@ function ensureOfflineSeedData() {
   const subjects = readStorage("tibbiya_subjects", []);
   if (!subjects.length) {
     const demoSubjects = [
-      { id: "bio", title: "الأحياء", icon: "🧬", color: "#3FA796", order: 1, description: "الخلية والوراثة والطبيعة" },
-      { id: "anat", title: "التشريح", icon: "🦴", color: "#14304A", order: 2, description: "هياكل الجسم والأنسجة" },
-      { id: "bioch", title: "الكيمياء الحيوية", icon: "🧪", color: "#F4A340", order: 3, description: "التفاعلات الحيوية في الجسم" },
-      { id: "path", title: "المرضيات", icon: "🩺", color: "#C1440E", order: 4, description: "أساسيات الأمراض والنتائج" }
+      { id: "human_anatomy", title: "تشريح الإنسان", icon: "🫀", color: "#C1440E", order: 1, description: "Human Anatomy - دراسة هياكل وأعضاء جسم الإنسان" },
+      { id: "physiology", title: "الفسلجة / علم وظائف الأعضاء", icon: "🧠", color: "#14304A", order: 2, description: "Physiology - دراسة وظائف الأجهزة الحيوية" },
+      { id: "biochemistry", title: "الكيمياء الحياتية", icon: "🧪", color: "#F4A340", order: 3, description: "Biochemistry - التفاعلات الكيميائية الحيوية" },
+      { id: "general_histology", title: "الأنسجة العامة", icon: "🔬", color: "#3FA796", order: 4, description: "General Histology - دراسة الأنسجة الحية" },
+      { id: "oral_histology", title: "أنسجة الفم والأجنة", icon: "🦷", color: "#7B4397", order: 5, description: "Oral Histology & Embryology - الأنسجة الفموية والنمو الجنيني" },
+      { id: "dental_materials", title: "المواد السنية", icon: "⚗️", color: "#DC6F3C", order: 6, description: "Dental Materials - المواد المستخدمة في طب الأسنان" },
+      { id: "prosthodontics", title: "صناعة الأسنان", icon: "😁", color: "#2E8B9E", order: 7, description: "Prosthodontics - تعويض وصناعة الأسنان" }
     ];
     writeStorage("tibbiya_subjects", demoSubjects);
   }
 
   if (!readStorage("tibbiya_lectures", []).length) {
     const defaultLectures = [
-      { id: "lec_1", subject_id: "anat", title: "مقدمة في التشريح", youtube_url: "https://youtube.com/watch?v=example", file_url: "", content_type: "video", published_by: "demo_teacher", created_at: new Date().toISOString() },
-      { id: "lec_2", subject_id: "bio", title: "مقدمة في الأحياء", youtube_url: "", file_url: "https://example.com/demo-biology.pdf", content_type: "video", published_by: "demo_teacher", created_at: new Date().toISOString() }
+      { id: "lec_1", subject_id: "human_anatomy", title: "مقدمة في تشريح الإنسان", youtube_url: "https://youtube.com/watch?v=example", file_url: "", content_type: "video", published_by: "demo_teacher", created_at: new Date().toISOString() },
+      { id: "lec_2", subject_id: "physiology", title: "وظائف الأعضاء الأساسية", youtube_url: "", file_url: "https://example.com/demo-physiology.pdf", content_type: "video", published_by: "demo_teacher", created_at: new Date().toISOString() },
+      { id: "lec_3", subject_id: "dental_materials", title: "أنواع المواد السنية", youtube_url: "https://youtube.com/watch?v=dental-materials", file_url: "", content_type: "video", published_by: "demo_teacher", created_at: new Date().toISOString() }
     ];
     writeStorage("tibbiya_lectures", defaultLectures);
   }
 
   if (!readStorage("tibbiya_materials", []).length) {
     const defaultMaterials = [
-      { id: "mat_1", subject_id: "anat", title: "ملزمة التشريح", file_url: "https://example.com/anatomy.pdf", content_type: "note", published_by: "demo_teacher", created_at: new Date().toISOString() },
-      { id: "mat_2", subject_id: "bio", title: "ملزمة الأحياء", file_url: "https://example.com/bio.pdf", content_type: "note", published_by: "demo_teacher", created_at: new Date().toISOString() }
+      { id: "mat_1", subject_id: "human_anatomy", title: "ملزمة تشريح الإنسان", file_url: "https://example.com/anatomy.pdf", content_type: "note", published_by: "demo_teacher", created_at: new Date().toISOString() },
+      { id: "mat_2", subject_id: "biochemistry", title: "ملزمة الكيمياء الحياتية", file_url: "https://example.com/biochemistry.pdf", content_type: "note", published_by: "demo_teacher", created_at: new Date().toISOString() },
+      { id: "mat_3", subject_id: "oral_histology", title: "ملزمة أنسجة الفم", file_url: "https://example.com/oral-histology.pdf", content_type: "note", published_by: "demo_teacher", created_at: new Date().toISOString() }
     ];
     writeStorage("tibbiya_materials", defaultMaterials);
   }
@@ -137,6 +151,11 @@ function ensureOfflineSeedData() {
 }
 
 ensureOfflineSeedData();
+
+const storedSiteSettings = readStorage("tibbiya_site_settings", null);
+if (!storedSiteSettings) {
+  writeStorage("tibbiya_site_settings", DEFAULT_SITE_SETTINGS);
+}
 
 const OfflineAI = {
   classifyRole(profile, candidateRole = "") {
@@ -440,6 +459,34 @@ const Api = {
         photoURL: authUser?.photoURL || "",
         role: "student"
       });
+    }
+  },
+
+  async getSiteSettings() {
+    try {
+      const localSettings = readStorage("tibbiya_site_settings", DEFAULT_SITE_SETTINGS);
+      if (isOfflineMode || !db) return { ...DEFAULT_SITE_SETTINGS, ...localSettings };
+
+      const snap = await getDoc(doc(db, "siteSettings", "main"));
+      const saved = snap.exists() ? snap.data() : {};
+      const merged = { ...DEFAULT_SITE_SETTINGS, ...localSettings, ...saved };
+      writeStorage("tibbiya_site_settings", merged);
+      return merged;
+    } catch (e) {
+      return { ...DEFAULT_SITE_SETTINGS, ...readStorage("tibbiya_site_settings", DEFAULT_SITE_SETTINGS) };
+    }
+  },
+
+  async saveSiteSettings(settings) {
+    const merged = { ...DEFAULT_SITE_SETTINGS, ...readStorage("tibbiya_site_settings", DEFAULT_SITE_SETTINGS), ...settings };
+    writeStorage("tibbiya_site_settings", merged);
+    if (isOfflineMode || !db) return merged;
+
+    try {
+      await setDoc(doc(db, "siteSettings", "main"), merged, { merge: true });
+      return merged;
+    } catch (e) {
+      return merged;
     }
   },
 

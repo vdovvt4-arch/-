@@ -14,7 +14,7 @@
   <header class="app-header">
     <div class="app-brand">
       <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="32" fill="var(--primary)"/><path d="M18 50 V24 A14 14 0 0 1 46 24 V50 Z" fill="var(--bg-main)"/></svg>
-      <span data-i18n="site_title">طبيّة</span>
+      <span data-site-title data-i18n="site_title">طبيّة</span>
     </div>
     <div class="app-header-actions">
       <button id="langToggle" data-i18n-lang-label class="link-btn" style="margin-inline-end:8px;">English</button>
@@ -24,7 +24,7 @@
 
   <main class="main-content settings-page">
     <div class="settings-hero">
-      <img class="hero-img" src="assets/hero-dentistry.jpg" alt="طب الأسنان" />
+      <img class="hero-img" data-site-logo data-default-src="assets/hero-dentistry.jpg" src="assets/hero-dentistry.jpg" alt="طب الأسنان" />
       <div class="hero-text">
         <h2 data-i18n="app_hero_title">طبيّة — منصة تعليمية تفاعلية لطلاب طب الأسنان</h2>
           <p data-i18n="app_hero_desc">تطبيق تعليمي من إعداد: <strong>عبدالله فاضل</strong> — مخصص لطلاب <strong>جامعة أهل البيت</strong>، يجمع المواد، المحاضرات، والمراجع بطريقة مرتبة وعصرية.</p>
@@ -59,6 +59,117 @@
 
       <div style="margin-top:18px; color:var(--ink-soft); font-size:.95rem">كل التعديلات تحفظ محلياً في المتصفح ويمكنك مزامنتها لاحقاً مع حسابك أو مع قاعدة بيانات Firestore عند تفعيل النشر.</div>
     </section>
+
+    <section class="settings-card">
+      <h1>إعدادات الموقع والهوية</h1>
+      <p class="muted">تحكم في اسم الموقع، اللون الأساسي، الشعار، والروابط العامة من هنا.</p>
+      <div class="admin-form-grid">
+        <div class="form-group">
+          <label>اسم الموقع</label>
+          <input id="siteTitleInput" type="text" placeholder="طبيّة">
+        </div>
+        <div class="form-group">
+          <label>لون الموقع</label>
+          <input id="sitePrimaryColor" type="color" value="#14304A">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>رابط الشعار</label>
+          <input id="siteLogoUrl" type="url" placeholder="https://example.com/logo.png">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>نص الفوتر</label>
+          <input id="siteFooterText" type="text" placeholder="© 2026 طبيّة — جميع الحقوق محفوظة">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>رابط التواصل / التليجرام</label>
+          <input id="siteTelegramLink" type="url" placeholder="https://t.me/yourchannel">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>رابط الواتساب</label>
+          <input id="siteWhatsappLink" type="url" placeholder="https://wa.me/201234567890">
+        </div>
+        <div class="form-group">
+          <label>النمط</label>
+          <select id="siteThemeMode" class="admin-select">
+            <option value="light">🟡 فاتح</option>
+            <option value="dark">🌙 داكن</option>
+            <option value="blue">🔵 أزرق</option>
+            <option value="blue-dark">🌙 أزرق داكن</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:18px; display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn-primary" id="saveSiteSettingsBtn" type="button">💾 حفظ إعدادات الموقع</button>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <h1>🔐 تغيير كلمة المرور</h1>
+      <p class="muted">قم بتحديث كلمة المرور الخاصة بحسابك</p>
+      <div class="admin-form-grid">
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>كلمة المرور الحالية</label>
+          <div class="password-wrap">
+            <input id="currentPassword" type="password" placeholder="أدخل كلمة المرور الحالية">
+            <button type="button" class="eye-btn" onclick="togglePass('currentPassword', this)">👁️</button>
+          </div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>كلمة المرور الجديدة</label>
+          <div class="password-wrap">
+            <input id="newPassword" type="password" placeholder="أدخل كلمة المرور الجديدة (6 أحرف على الأقل)">
+            <button type="button" class="eye-btn" onclick="togglePass('newPassword', this)">👁️</button>
+          </div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>تأكيد كلمة المرور الجديدة</label>
+          <div class="password-wrap">
+            <input id="confirmPassword" type="password" placeholder="أدخل كلمة المرور الجديدة مرة أخرى">
+            <button type="button" class="eye-btn" onclick="togglePass('confirmPassword', this)">👁️</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:18px; display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn-primary" id="changePasswordBtn" type="button">🔄 تحديث كلمة المرور</button>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <h1>📱 التواصل مع صاحب التطبيق</h1>
+      <p class="muted">تواصل مباشرة مع مطور التطبيق عبر المنصات المختلفة</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-top:16px;">
+        <a href="https://wa.me/201069821311" target="_blank" rel="noopener" class="contact-card">
+          <div class="contact-icon">💬</div>
+          <div class="contact-info">
+            <h3>واتساب</h3>
+            <p>07824524131</p>
+            <span class="contact-action">اتصل الآن →</span>
+          </div>
+        </a>
+        <a href="https://t.me/FordeReter" target="_blank" rel="noopener" class="contact-card">
+          <div class="contact-icon">✈️</div>
+          <div class="contact-info">
+            <h3>تليجرام</h3>
+            <p>@FordeReter</p>
+            <span class="contact-action">قناة التليجرام →</span>
+          </div>
+        </a>
+        <a href="mailto:support@tibbiya.local" class="contact-card">
+          <div class="contact-icon">📧</div>
+          <div class="contact-info">
+            <h3>البريد الإلكتروني</h3>
+            <p>support@tibbiya.local</p>
+            <span class="contact-action">ارسل رسالة →</span>
+          </div>
+        </a>
+      </div>
+      <div style="margin-top:20px; background:var(--surface-2); border-radius:var(--radius-md); padding:16px; border-inline-start:4px solid var(--accent-2);">
+        <p style="color:var(--ink-soft); margin:0; font-size:.9rem; line-height:1.6;">
+          <strong>ملاحظة:</strong> تم تطوير هذا التطبيق بعناية خاصة لطلاب <strong>جامعة أهل البيت</strong> لتسهيل عملية التعلم والبحث العلمي. 
+          يمكنك التواصل معنا للإبلاغ عن مشاكل، طلب ميزات جديدة، أو تقديم اقتراحاتك.
+        </p>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -71,10 +182,10 @@
         </div>
         <div class="footer-text">
           <h4>تواصل معنا</h4>
-          <p><a class="telegram-link" href="https://t.me/FordeReter" target="_blank" rel="noopener">قناة التليجرام الرسمية</a></p>
+          <p><a class="telegram-link" href="https://t.me/FordeReter" data-site-telegram target="_blank" rel="noopener">قناة التليجرام الرسمية</a></p>
         </div>
       </div>
-      <div class="footer-note">© 2026 طبيّة — جميع الحقوق محفوظة</div>
+      <div class="footer-note" data-site-footer>© 2026 طبيّة — جميع الحقوق محفوظة</div>
     </div>
   </footer>
 
